@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity
 {
     Context context;
     private static final int REQUEST_CAMERA_PERMISSION = 200;
-    private static final String LOG_TAG = "BalloonCamera";
     CameraView cameraView;
     GPSTracker gpsTracker;
     boolean keepTakingPictures = false;
@@ -85,11 +84,9 @@ public class MainActivity extends AppCompatActivity
                     try
                     {
                         file.createNewFile();
-                        Toast.makeText(context, "Created " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
                     }
                     catch (IOException e)
                     {
-                        Toast.makeText(context, "Failed to create " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
                     }
                 }
@@ -98,7 +95,7 @@ public class MainActivity extends AppCompatActivity
                 try
                 {
                     outStream = new FileOutputStream(file);
-                    cameraKitImage.getBitmap().compress(Bitmap.CompressFormat.PNG, 100, outStream);
+                    cameraKitImage.getBitmap().compress(Bitmap.CompressFormat.JPEG, 100, outStream);
                     outStream.flush();
                     outStream.close();
 
@@ -129,8 +126,6 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
-
-
     }
 
     public void takePictures(View view)
@@ -139,13 +134,15 @@ public class MainActivity extends AppCompatActivity
 
         if (!keepTakingPictures)
         {
+            Toast.makeText(context, "Started taking pictures", Toast.LENGTH_SHORT).show();
             handler.post(pictureTaker);
         }
     }
 
-    public void stopTakeingPictures(View view)
+    public void stopTakingPictures(View view)
     {
         keepTakingPictures = false;
+        Toast.makeText(context, "Stopped taking pictures", Toast.LENGTH_SHORT).show();
     }
 
     @Override
