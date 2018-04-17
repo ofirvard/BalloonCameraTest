@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -30,11 +31,25 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity
 {
+    Context context;
     private static final int REQUEST_CAMERA_PERMISSION = 200;
     private static final String LOG_TAG = "BalloonCamera";
     CameraView cameraView;
     GPSTracker gpsTracker;
-    Context context;
+    boolean keepTakingPictures = false;
+    final Handler handler = new Handler();
+    final Runnable pictureTaker = new Runnable()
+    {
+        @Override
+        public void run()
+        {
+            if (keepTakingPictures)
+            {
+                cameraView.captureImage();
+                handler.postDelayed(pictureTaker, 15000);
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -42,8 +57,8 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ActivityCompat.requestPermissions(this, new String[]{
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,}
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,}
                 , REQUEST_CAMERA_PERMISSION);
         context = this;
         gpsTracker = new GPSTracker(this);
@@ -114,11 +129,23 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
+
     }
 
-    public void takePicture(View view)
+    public void takePictures(View view)
     {
         cameraView.captureImage();
+
+        if (!keepTakingPictures)
+        {
+            handler.post(pictureTaker);
+        }
+    }
+
+    public void stopTakeingPictures(View view)
+    {
+        keepTakingPictures = false;
     }
 
     @Override
