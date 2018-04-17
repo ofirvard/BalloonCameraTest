@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.wonderkiln.camerakit.CameraKitError;
@@ -25,6 +26,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -33,7 +35,9 @@ public class MainActivity extends AppCompatActivity
 {
     Context context;
     private static final int REQUEST_CAMERA_PERMISSION = 200;
+    int countdown = 15;
     CameraView cameraView;
+    TextView timer;
     GPSTracker gpsTracker;
     boolean keepTakingPictures = false;
     final Handler handler = new Handler();
@@ -44,8 +48,21 @@ public class MainActivity extends AppCompatActivity
         {
             if (keepTakingPictures)
             {
-                cameraView.captureImage();
-                handler.postDelayed(pictureTaker, 15000);
+                if (countdown == 0)
+                {
+                    cameraView.captureImage();
+                    countdown = 15;
+                }
+                countdown--;
+                String s = "" + countdown;
+                timer.setText(s);
+                handler.postDelayed(pictureTaker, 1000);
+            }
+            else
+            {
+                countdown = 15;
+                String s = "" + countdown;
+                timer.setText(s);
             }
         }
     };
@@ -62,6 +79,7 @@ public class MainActivity extends AppCompatActivity
         context = this;
         gpsTracker = new GPSTracker(this);
         cameraView = findViewById(R.id.camera_view);
+        timer = findViewById(R.id.timer);
         cameraView.addCameraKitListener(new CameraKitEventListener()
         {
             @Override
@@ -134,6 +152,7 @@ public class MainActivity extends AppCompatActivity
 
         if (!keepTakingPictures)
         {
+            keepTakingPictures = true;
             Toast.makeText(context, "Started taking pictures", Toast.LENGTH_SHORT).show();
             handler.post(pictureTaker);
         }
