@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity
                 if (countdown == 0)
                 {
                     cameraView.captureImage();
-                    countdown = 15;
+                    countdown = 16;
                 }
                 countdown--;
                 String s = "" + countdown;
@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity
         gpsTracker = new GPSTracker(this);
         cameraView = findViewById(R.id.camera_view);
         timer = findViewById(R.id.timer);
+        ((TextView) findViewById(R.id.timer)).setText("hello");
         cameraView.addCameraKitListener(new CameraKitEventListener()
         {
             @Override
@@ -91,9 +92,8 @@ public class MainActivity extends AppCompatActivity
                 if (gpsTracker.canGetLocation())
                 {
                     imageFileName += "_lat-" + gpsTracker.getLatitude() + "_lon-" + gpsTracker.getLongitude();
-
-                    if (gpsTracker.getLocation().hasAltitude())
-                        imageFileName += "_alt-" + gpsTracker.getLocation().getAltitude();
+//                    if (gpsTracker.getLocation().hasAltitude())
+//                        imageFileName += "_alt-" + gpsTracker.getLocation().getAltitude();
                 }
                 imageFileName += ".jpg";
                 File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), imageFileName);
@@ -152,16 +152,19 @@ public class MainActivity extends AppCompatActivity
 
         if (!keepTakingPictures)
         {
+            timer.setText("start");
             keepTakingPictures = true;
-            Toast.makeText(context, "Started taking pictures", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(context, "Started taking pictures", Toast.LENGTH_SHORT).show();
             handler.post(pictureTaker);
         }
     }
 
     public void stopTakingPictures(View view)
     {
+        timer.setText("stop");
+
         keepTakingPictures = false;
-        Toast.makeText(context, "Stopped taking pictures", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(context, "Stopped taking pictures", Toast.LENGTH_SHORT).show();
     }
 
     @Override
