@@ -33,6 +33,7 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity
 {
+    // TODO: 4/18/2018 add upload 
     Context context;
     private static final int REQUEST_CAMERA_PERMISSION = 200;
     int countdown = 15;
