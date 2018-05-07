@@ -36,7 +36,8 @@ public class MainActivity extends AppCompatActivity
     // TODO: 4/18/2018 add upload 
     Context context;
     private static final int REQUEST_CAMERA_PERMISSION = 200;
-    int countdown = 15;
+    final int COUNTDOWN_MAX = 10;
+    int countdown = COUNTDOWN_MAX;
     CameraView cameraView;
     TextView timer;
     GPSTracker gpsTracker;
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity
                 if (countdown == 0)
                 {
                     cameraView.captureImage();
-                    countdown = 16;
+                    countdown = COUNTDOWN_MAX;
                 }
                 countdown--;
                 String s = "" + countdown;
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity
             }
             else
             {
-                countdown = 15;
+                countdown = COUNTDOWN_MAX;
                 String s = "" + countdown;
                 timer.setText(s);
             }
@@ -103,8 +104,7 @@ public class MainActivity extends AppCompatActivity
                     try
                     {
                         file.createNewFile();
-                    }
-                    catch (IOException e)
+                    } catch (IOException e)
                     {
                         e.printStackTrace();
                     }
@@ -119,8 +119,7 @@ public class MainActivity extends AppCompatActivity
                     outStream.close();
 
                     Toast.makeText(context, "Saved " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-                }
-                catch (IOException e)
+                } catch (IOException e)
                 {
                     Toast.makeText(context, "Failed to save " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
