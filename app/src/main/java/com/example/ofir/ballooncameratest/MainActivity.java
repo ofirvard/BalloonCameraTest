@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity
     TextView timer;
     GPSTracker gpsTracker;
     boolean keepTakingPictures = false;
+    boolean passed2k = false;
     final Handler handler = new Handler();
     final Runnable pictureTaker = new Runnable()
     {
@@ -94,8 +95,17 @@ public class MainActivity extends AppCompatActivity
                 if (gpsTracker.canGetLocation())
                 {
                     imageFileName += "_lat-" + gpsTracker.getLatitude() + "_lon-" + gpsTracker.getLongitude();
-//                    if (gpsTracker.getLocation().hasAltitude())
-//                        imageFileName += "_alt-" + gpsTracker.getLocation().getAltitude();
+                    if (gpsTracker.getLocation().hasAltitude())
+                    {
+                        double alt = gpsTracker.getLocation().getAltitude();
+                        imageFileName += "_alt-" + alt;
+
+                        if (!passed2k && alt > 2000)
+                            passed2k = true;
+
+                        if (passed2k && alt < 2000)
+                            keepTakingPictures = false;
+                    }
                 }
                 imageFileName += ".jpg";
                 File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), imageFileName);
