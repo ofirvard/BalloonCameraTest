@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -162,7 +163,8 @@ public class MainActivity extends AppCompatActivity
 
         if (!keepTakingPictures)
         {
-            timer.setText("start");
+            countdown = Integer.parseInt(((EditText) findViewById(R.id.editText)).getText().toString());
+//            timer.setText("start");
             keepTakingPictures = true;
 //            Toast.makeText(context, "Started taking pictures", Toast.LENGTH_SHORT).show();
             handler.post(pictureTaker);
@@ -171,7 +173,7 @@ public class MainActivity extends AppCompatActivity
 
     public void stopTakingPictures(View view)
     {
-        timer.setText("stop");
+//        timer.setText("stop");
 
         keepTakingPictures = false;
 //        Toast.makeText(context, "Stopped taking pictures", Toast.LENGTH_SHORT).show();
