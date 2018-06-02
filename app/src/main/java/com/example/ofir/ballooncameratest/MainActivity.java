@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.os.BatteryManager;
 import android.os.Environment;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -37,13 +38,14 @@ public class MainActivity extends AppCompatActivity
     // TODO: 4/18/2018 add upload 
     Context context;
     private static final int REQUEST_CAMERA_PERMISSION = 200;
-    final int COUNTDOWN_MAX = 10;
+    int COUNTDOWN_MAX = 10;
     int countdown = COUNTDOWN_MAX;
     CameraView cameraView;
     TextView timer;
     GPSTracker gpsTracker;
     boolean keepTakingPictures = false;
-    boolean passed2k = false;
+    boolean reach5k = false, reach10k = false, reach15k = false;
+    BatteryManager bm;
     final Handler handler = new Handler();
     final Runnable pictureTaker = new Runnable()
     {
@@ -81,6 +83,7 @@ public class MainActivity extends AppCompatActivity
                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,}
                 , REQUEST_CAMERA_PERMISSION);
         context = this;
+        bm = (BatteryManager)getSystemService(BATTERY_SERVICE);
         gpsTracker = new GPSTracker(this);
         cameraView = findViewById(R.id.camera_view);
         timer = findViewById(R.id.timer);
@@ -101,11 +104,23 @@ public class MainActivity extends AppCompatActivity
                         double alt = gpsTracker.getLocation().getAltitude();
                         imageFileName += "_alt-" + alt;
 
-                        if (!passed2k && alt > 2000)
-                            passed2k = true;
+                        if (!reach5k && alt >= 5000)
+                        {
+                            COUNTDOWN_MAX = 30;
+                            reach5k = true;
+                        }
 
-                        if (passed2k && alt < 2000)
-                            keepTakingPictures = false;
+                        if (!reach10k && alt >= 10000)
+                        {
+                            COUNTDOWN_MAX = 60;
+                            reach10k = true;
+                        }
+
+                        if (!reach15k && alt >= 15000)
+                            reach15k = true;
+
+                        if (reach15k && alt <= 10000)
+                            finish();
                     }
                 }
                 imageFileName += ".jpg";
@@ -115,7 +130,8 @@ public class MainActivity extends AppCompatActivity
                     try
                     {
                         file.createNewFile();
-                    } catch (IOException e)
+                    }
+                    catch (IOException e)
                     {
                         e.printStackTrace();
                     }
@@ -130,11 +146,15 @@ public class MainActivity extends AppCompatActivity
                     outStream.close();
 
                     Toast.makeText(context, "Saved " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
-                } catch (IOException e)
+                }
+                catch (IOException e)
                 {
                     Toast.makeText(context, "Failed to save " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
+
+                if (bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)<=30)
+                    finish();
             }
 
             @Override
@@ -163,7 +183,6 @@ public class MainActivity extends AppCompatActivity
 
         if (!keepTakingPictures)
         {
-            countdown = Integer.parseInt(((EditText) findViewById(R.id.editText)).getText().toString());
 //            timer.setText("start");
             keepTakingPictures = true;
 //            Toast.makeText(context, "Started taking pictures", Toast.LENGTH_SHORT).show();
